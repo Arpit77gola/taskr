@@ -1,0 +1,89 @@
+{% if already_submitted %}
+<div class="already-done">
+    <div class="check">✅</div>
+    <div>
+        <div class="done-pts">{{ already_submitted[0] }} PTS</div>
+        <div class="done-label">Submitted Today</div>
+    </div>
+</div>
+
+{% else %}
+
+<form id="task-form">
+    <div class="task-title">{{ task[1] }}</div>
+    <div class="task-desc">{{ task[2] }}</div>
+    <div class="task-deadline">⏰ {{ task[3] }}</div>
+
+    {% if task[4] == 'wakeup' %}
+        <p style="color:var(--muted);font-size:13px;margin-bottom:20px;">Earlier you click → more points<br>
+        <span style="color:var(--cyan);font-family:'JetBrains Mono',monospace;">6:00 = 10pts &nbsp; 6:30 = 5pts &nbsp; miss = −5</span></p>
+        <button type="submit" class="yes-btn">✓ &nbsp; I'M AWAKE</button>
+
+    {% elif task[4] == 'workout' %}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <input type="number" name="workout_minutes" id="workout-input" min="1" max="180" placeholder="60" class="styled-input">
+            <span class="input-unit">MINUTES</span>
+        </div>
+        <div id="workout-preview" class="pts-preview" style="display:none;">
+            <span class="pts-num" id="workout-pts-num">0</span>
+            <span class="pts-label">estimated pts</span>
+        </div>
+        <button type="submit" class="submit-btn">Submit Workout →</button>
+
+    {% elif task[4] == 'steps' %}
+        <div style="text-align:center;margin:10px 0;">
+            <canvas id="steps-gauge" width="220" height="130"></canvas>
+            <p id="steps-label" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--cyan);letter-spacing:2px;margin:4px 0;">0 STEPS</p>
+            <p id="steps-pts-label" style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;">enter steps below</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin:12px 0;">
+            <input type="number" name="steps" id="steps-input" min="0" placeholder="8500" class="styled-input" style="width:180px;">
+            <span class="input-unit">STEPS</span>
+        </div>
+        <button type="submit" class="submit-btn">Submit Steps →</button>
+
+    {% elif task[4] == 'water' %}
+        <div style="display:flex;align-items:flex-end;gap:20px;margin-bottom:16px;">
+            <div style="width:44px;height:90px;border:1px solid rgba(79,195,220,0.3);border-radius:6px;position:relative;overflow:hidden;background:var(--bg3);">
+                <div id="water-fill" style="position:absolute;bottom:0;width:100%;background:linear-gradient(0deg,#4fc3dc,rgba(79,195,220,0.4));height:0%;transition:height 0.5s;"></div>
+            </div>
+            <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                    <input type="number" name="water_litres" id="water-input" min="0" max="10" step="0.1" placeholder="2.5" class="styled-input">
+                    <span class="input-unit">LITRES</span>
+                </div>
+                <div id="water-preview" class="pts-preview" style="display:none;">
+                    <span class="pts-num" id="water-pts-num">0</span>
+                    <span class="pts-label">estimated pts</span>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="submit-btn">Submit Water →</button>
+
+    {% elif task[4] == 'learning' %}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <input type="number" name="workout_minutes" id="workout-input" min="0.5" max="10" step="0.5" placeholder="1.5" class="styled-input">
+            <span class="input-unit">HOURS</span>
+        </div>
+        <div id="workout-preview" class="pts-preview" style="display:none;">
+            <span class="pts-num" id="workout-pts-num">0</span>
+            <span class="pts-label">estimated pts</span>
+        </div>
+        <button type="submit" class="submit-btn">Submit Learning →</button>
+
+    {% elif task[4] == 'talking' %}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <input type="number" name="workout_minutes" id="workout-input" min="1" max="120" placeholder="30" class="styled-input">
+            <span class="input-unit">MINUTES</span>
+        </div>
+        <div id="workout-preview" class="pts-preview" style="display:none;">
+            <span class="pts-num" id="workout-pts-num">0</span>
+            <span class="pts-label">estimated pts</span>
+        </div>
+        <button type="submit" class="submit-btn">Submit Talking →</button>
+
+    {% endif %}
+
+</form>
+<p id="msg" class="task-msg"></p>
+{% endif %}

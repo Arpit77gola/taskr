@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <div class="sidebar-brand">
+            TASKR
+            <span>DAILY DISCIPLINE</span>
+        </div>
+
+        <div class="tasks-label">Your Tasks</div>
+
+        {% for task in tasks %}
+            <a href="#" class="task-link" data-id="{{ task[0] }}">
+                {{ task[1] }}
+            </a>
+        {% endfor %}
+
+        <div class="leaderboard" style="margin-top: 30px;">
+            <h3>⚡ RANKINGS</h3>
+
+            <div style="display:flex; gap:5px; margin-bottom:12px;">
+                <button onclick="switchTab('daily')"   id="tab-daily"   class="lb-tab active-tab">Daily</button>
+                <button onclick="switchTab('weekly')"  id="tab-weekly"  class="lb-tab">Weekly</button>
+                <button onclick="switchTab('overall')" id="tab-overall" class="lb-tab">Overall</button>
+            </div>
+
+            <div id="lb-content" style="color: var(--muted); font-size:13px;">Loading...</div>
+        </div>
+
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>{{ username }}</h2>
+                <p>Stay locked in. Win every day.</p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="weekly-box">
+                    <p>This Week</p>
+                    <h3 id="weekly-points">{{ weekly_points if weekly_points else 0 }}</h3>
+                </div>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">Points Today</div>
+                <div class="stat-value" id="today-points">{{ total }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Weekly Total</div>
+                <div class="stat-value gold" id="weekly-points-2">{{ weekly_points if weekly_points else 0 }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Tasks Available</div>
+                <div class="stat-value">{{ tasks|length }}</div>
+            </div>
+        </div>
+
+        <!-- Task Area -->
+        <div class="task-container" id="task-container">
+            <div class="empty-state">
+                <div class="arrow">←</div>
+                <p>Select a task to get started</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Task link click
+document.querySelectorAll(".task-link").forEach(function(link) {
+    link.addEventListener("click", function(e) {
+        e.preventDefault();
+        document.querySelectorAll(".task-link").forEach(l => l.classList.remove("active"));
+        this.classList.add("active");
+        loadTask(this.getAttribute("data-id"));
+    });
+});
+
+function loadTask(taskId) {
+    var container = document.getElementById("task-container");
+    container.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:20px 0;">Loading...</div>';
+    container.classList.add("has-task");
+    container.setAttribute("data-task-id", taskId);
+
+    fetch("/task_data/" + taskId)
+    .then(res => res.text())
+    .then(data => {
+        container.innerHTML = data;
+        initTaskScripts();
+    });
+}
+
+function initTaskScripts() {
+    var canvas = document.getElementById("steps-gauge");
+    if (canvas) {
+        drawGauge(0, 0);
+        var inp = document.getElementById("steps-input");
+        if (inp) inp.addEventListener("input", function() { updateGauge(this.value); });
+    }
+    var wi = document.getElementById("workout-input");
+    if (wi) wi.addEventListener("input", function() { updateWorkoutPoints(this.value); });
+    var wti = document.getElementById("water-input");
+    if (wti) wti.addEventListener("input", function() { updateWaterPoints(this.value); });
+}
+
+// Speedometer
+function drawGauge(ratio, steps) {
+    var canvas = document.getElementById("steps-gauge");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var cx = 110, cy = 115, r = 90;
+    ctx.clearRect(0, 0, 220, 130);
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, Math.PI, 2 * Math.PI);
+    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    ctx.lineWidth = 16; ctx.lineCap = "round"; ctx.stroke();
+
+    var color = steps < 8000 ? "#ff6b6b" : steps < 12000 ? "#ffd93d" : "#4fc3dc";
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, Math.PI, Math.PI + ratio * Math.PI);
+    ctx.strokeStyle = color; ctx.lineWidth = 16; ctx.lineCap = "round"; ctx.stroke();
+
+    var angle = Math.PI + ratio * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + (r-22)*Math.cos(angle), cy + (r-22)*Math.sin(angle));
+    ctx.strokeStyle = "white"; ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 7, 0, 2*Math.PI);
+    ctx.fillStyle = "white"; ctx.fill();
+
+    ctx.fillStyle = "rgba(90,122,138,0.8)"; ctx.font = "10px JetBrains Mono,monospace";
+    ctx.fillText("0", 12, 118); ctx.fillText("20k", 175, 118);
+}
+
+function updateGauge(val) {
+    val = parseInt(val) || 0;
+    var ratio = Math.min(1, val / 20000);
+    var pts = val < 8000 ? 0 : Math.min(30, 10 + Math.floor((val-8000)/1000)*2);
+    var label = document.getElementById("steps-label");
+    var ptsLabel = document.getElementById("steps-pts-label");
+    if (label) label.innerText = val.toLocaleString() + " steps";
+    if (ptsLabel) {
+        ptsLabel.innerText = val < 8000 ? "Need " + (8000-val).toLocaleString() + " more" : "+ " + pts + " pts";
+        ptsLabel.style.color = val >= 8000 ? "#4fc3dc" : "#ff6b6b";
+    }
+    drawGauge(ratio, val);
+}
+
+function updateWorkoutPoints(val) {
+    val = parseFloat(val) || 0;
+    var pts = Math.min(30, Math.max(1, Math.round((val/90)*30)));
+    var el = document.getElementById("workout-pts-num");
+    var pr = document.getElementById("workout-preview");
+    if (pr) pr.style.display = val > 0 ? "inline-flex" : "none";
+    if (el) el.innerText = pts;
+}
+
+function updateWaterPoints(val) {
+    val = parseFloat(val) || 0;
+    var pts = Math.min(30, Math.max(1, Math.round((val/4)*30)));
+    var fill = document.getElementById("water-fill");
+    var el = document.getElementById("water-pts-num");
+    var pr = document.getElementById("water-preview");
+    if (fill) fill.style.height = Math.min(100,(val/4)*100) + "%";
+    if (pr) pr.style.display = val > 0 ? "inline-flex" : "none";
+    if (el) el.innerText = pts;
+}
+
+// AJAX submit
+document.addEventListener("submit", function(e) {
+    if (e.target.id === "task-form") {
+        e.preventDefault();
+        var taskId = document.getElementById("task-container").getAttribute("data-task-id");
+        var formData = new FormData(e.target);
+        var msgEl = document.getElementById("msg");
+        if (msgEl) { msgEl.innerText = "Submitting..."; msgEl.style.color = "var(--muted)"; }
+
+        fetch("/task/" + taskId, { method: "POST", body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = "/dashboard";
+            } else {
+                if (msgEl) { msgEl.innerText = data.error || "Error ❌"; msgEl.style.color = "var(--red)"; }
+            }
+        })
+        .catch(() => { if (msgEl) { msgEl.innerText = "Network error ❌"; msgEl.style.color = "var(--red)"; }});
+    }
+});
+
+// Dashboard data
+function updateDashboard() {
+    fetch("/dashboard_data")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("today-points").innerText = data.total;
+        document.getElementById("weekly-points").innerText = data.weekly;
+        document.getElementById("weekly-points-2").innerText = data.weekly;
+    });
+}
+
+// Leaderboard
+var lbData = {};
+var currentTab = 'daily';
+
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll(".lb-tab").forEach(b => b.classList.remove("active-tab"));
+    document.getElementById("tab-" + tab).classList.add("active-tab");
+    renderLeaderboard();
+}
+
+function renderLeaderboard() {
+    var el = document.getElementById("lb-content");
+    if (!lbData.daily) { el.innerHTML = "Loading..."; return; }
+
+    if (currentTab === 'overall') {
+        var html = "";
+        lbData.overall.forEach((u, i) => {
+            var medal = i===0?"🥇":i===1?"🥈":"🥉";
+            html += `<div class="lb-row"><span>${medal} ${u[0]}</span><span style="font-family:'JetBrains Mono',monospace;color:var(--cyan);">${u[1]}</span></div>`;
+        });
+        el.innerHTML = html || '<p style="color:var(--muted);font-size:12px;">No data yet</p>';
+        return;
+    }
+
+    var data = lbData[currentTab];
+    var users = Object.keys(data);
+    if (users.length === 0) { el.innerHTML = '<p style="color:var(--muted);font-size:12px;">No data yet</p>'; return; }
+
+    var u1 = users[0], u2 = users[1] || null;
+    var tasks = [...new Set([...Object.keys(data[u1]||{}), ...Object.keys(data[u2]||{})])];
+    var t1 = Object.values(data[u1]||{}).reduce((a,b)=>a+b,0);
+    var t2 = u2 ? Object.values(data[u2]||{}).reduce((a,b)=>a+b,0) : 0;
+
+    var html = `<div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--glass-border);">
+        <span style="color:#4fc3dc;font-weight:700;font-size:12px;letter-spacing:1px;">${u1.toUpperCase()}</span>
+        ${u2?`<span style="color:#ffd93d;font-weight:700;font-size:12px;letter-spacing:1px;">${u2.toUpperCase()}</span>`:''}
+    </div>`;
+
+    tasks.forEach(task => {
+        var p1 = data[u1]?.[task]||0;
+        var p2 = u2&&data[u2]?.[task]||0;
+        var w = p1>p2?"left":p2>p1?"right":"tie";
+        var short = task.length>11 ? task.substring(0,10)+"…" : task;
+        html += `<div style="margin:8px 0;">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">${short}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${w==='left'?'#4fc3dc':'var(--muted)'};">${p1}</span>
+                <span style="font-size:9px;color:var(--glass-border);">VS</span>
+                <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${w==='right'?'#ffd93d':'var(--muted)'};">${p2}</span>
+            </div>
+        </div>`;
+    });
+
+    html += `<div style="border-top:1px solid var(--glass-border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#4fc3dc;">${t1}</span>
+        ${u2?`<span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ffd93d;">${t2}</span>`:''}
+    </div>`;
+
+    if (u2) {
+        var u1w = tasks.filter(t=>(data[u1]?.[t]||0)>(data[u2]?.[t]||0));
+        var u2w = tasks.filter(t=>(data[u2]?.[t]||0)>(data[u1]?.[t]||0));
+        if (u1w.length) html += `<p style="font-size:10px;color:#4fc3dc;margin-top:8px;">↑ ${u1}: ${u1w.join(", ")}</p>`;
+        if (u2w.length) html += `<p style="font-size:10px;color:#ffd93d;margin-top:4px;">↑ ${u2}: ${u2w.join(", ")}</p>`;
+    }
+
+    el.innerHTML = html;
+}
+
+function loadLeaderboard() {
+    fetch("/leaderboard_data").then(res=>res.json()).then(data=>{lbData=data;renderLeaderboard();});
+}
+
+loadLeaderboard();
+setInterval(updateDashboard, 30000);
+setInterval(loadLeaderboard, 30000);
+
+fetch("/check_penalties").then(res=>res.json()).then(data=>{ if(data.applied) updateDashboard(); });
+</script>
+
+</body>
+</html>

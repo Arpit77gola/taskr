@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login — TASKR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #4fc3dc;
+            --cyan-dim: rgba(79,195,220,0.12);
+            --cyan-glow: rgba(79,195,220,0.35);
+            --bg: #070d1a;
+            --bg2: #0d1628;
+            --bg3: #111f35;
+            --glass: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --text: #e8f4f8;
+            --muted: #5a7a8a;
+            --red: #ff6b6b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 50% 60% at 80% 20%, rgba(79,195,220,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 50% at 10% 90%, rgba(30,58,138,0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Grid pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 0;
+            width: 820px;
+            height: 520px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+            animation: fadeUp 0.6s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Left panel */
+        .left-panel {
+            width: 340px;
+            background: var(--bg2);
+            padding: 50px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            letter-spacing: 6px;
+            color: var(--cyan);
+            line-height: 1;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        .quote {
+            font-size: 22px;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1px;
+            line-height: 1.3;
+            color: var(--text);
+            opacity: 0.7;
+            margin-bottom: 16px;
+        }
+
+        .quote span { color: var(--cyan); opacity: 1; }
+
+        .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--glass-border);
+        }
+
+        .dot.active { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+
+        /* Right panel */
+        .right-panel {
+            flex: 1;
+            background: var(--bg);
+            padding: 50px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 32px;
+            letter-spacing: 3px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .form-sub {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 300;
+            margin-bottom: 36px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-label {
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--bg3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 15px;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px var(--cyan-dim);
+        }
+
+        .toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 14px;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .toggle:hover { color: var(--cyan); }
+
+        .error-msg {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,107,107,0.08);
+            border: 1px solid rgba(255,107,107,0.25);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--red);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .form-options a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .form-options a:hover { color: var(--cyan); }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            border-radius: 14px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 20px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            background: #6dd4e8;
+            box-shadow: 0 8px 24px var(--cyan-glow);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            background: var(--bg3);
+            color: var(--muted);
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Left -->
+    <div class="left-panel">
+        <div>
+            <div class="brand">TASKR</div>
+            <div class="brand-sub">Daily Discipline</div>
+        </div>
+
+        <div class="left-bottom">
+            <div class="quote">
+                Small habits.<br>
+                <span>Big results.</span>
+            </div>
+            <div class="dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right -->
+    <div class="right-panel">
+        <div class="form-title">WELCOME BACK</div>
+        <div class="form-sub">Sign in to track your progress</div>
+
+        {% if error %}
+        <div class="error-msg">⚠ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" onsubmit="handleSubmit()">
+
+            <div class="input-group">
+                <label class="input-label">Username</label>
+                <div class="input-wrap">
+                    <input type="text" name="username" required autocomplete="off">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Password</label>
+                <div class="input-wrap">
+                    <input type="password" name="password" id="password" required>
+                    <span class="toggle" onclick="togglePassword()">👁</span>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <a href="/reset">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="submit-btn" id="btn">SIGN IN</button>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+function togglePassword() {
+    var p = document.getElementById("password");
+    p.type = p.type === "password" ? "text" : "password";
+}
+
+function handleSubmit() {
+    var btn = document.getElementById("btn");
+    btn.innerText = "SIGNING IN...";
+    btn.disabled = true;
+}    
+</script>
+
+</body>
+</html>
