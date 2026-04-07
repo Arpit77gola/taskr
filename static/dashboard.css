@@ -25,7 +25,6 @@ body {
     overflow: hidden;
 }
 
-/* Animated background */
 body::before {
     content: '';
     position: fixed;
@@ -543,3 +542,171 @@ body::before {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+
+/* ══════════════════════════════════════
+   📱 MOBILE RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .layout {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* Sidebar mobile */
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+        padding: 16px;
+        overflow-y: visible;
+    }
+
+    .sidebar-brand {
+        font-size: 22px;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+    }
+
+    .tasks-label {
+        margin-top: 8px;
+    }
+
+    /* Tasks horizontal scroll on mobile */
+    .task-links-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .task-link {
+        padding: 8px 12px;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    /* Leaderboard below tasks */
+    .leaderboard {
+        margin-top: 16px;
+        padding-top: 16px;
+    }
+
+    /* Main area */
+    .main {
+        padding: 16px;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    /* Topbar */
+    .topbar {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .topbar-left h2 {
+        font-size: 28px;
+    }
+
+    .topbar-left p {
+        font-size: 12px;
+    }
+
+    .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .weekly-box {
+        padding: 10px 16px;
+    }
+
+    .weekly-box h3 {
+        font-size: 24px;
+    }
+
+    /* Stats row — 3 col on mobile too but smaller */
+    .stats-row {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .stat-card {
+        padding: 14px 12px;
+        border-radius: 14px;
+    }
+
+    .stat-label {
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
+
+    .stat-value {
+        font-size: 32px;
+    }
+
+    /* Task container */
+    .task-container {
+        padding: 20px 16px;
+        min-height: 120px;
+        border-radius: 16px;
+    }
+
+    .task-title {
+        font-size: 24px;
+    }
+
+    .task-desc {
+        font-size: 13px;
+    }
+
+    /* Input bigger on mobile */
+    .styled-input {
+        width: 130px;
+        font-size: 18px;
+        padding: 10px 12px;
+    }
+
+    /* Buttons full width on mobile */
+    .submit-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+
+    .yes-btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 24px;
+        padding: 16px 20px;
+    }
+
+    /* Already done */
+    .already-done {
+        padding: 16px;
+    }
+
+    .already-done .done-pts {
+        font-size: 28px;
+    }
+
+    /* Empty state */
+    .empty-state .arrow {
+        animation: bounce-down 2s infinite;
+    }
+
+    @keyframes bounce-down {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(6px); }
+    }
+}

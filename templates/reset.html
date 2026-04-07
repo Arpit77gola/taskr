@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Reset — TASKR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -18,20 +19,17 @@
             --red: #ff6b6b;
             --green: #4ade80;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--bg);
             color: var(--text);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            padding: 20px 16px;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -41,7 +39,6 @@
                 radial-gradient(ellipse 40% 50% at 90% 80%, rgba(30,58,138,0.1) 0%, transparent 60%);
             pointer-events: none;
         }
-
         body::after {
             content: '';
             position: fixed;
@@ -52,11 +49,11 @@
             background-size: 60px 60px;
             pointer-events: none;
         }
-
         .container {
             position: relative;
             z-index: 1;
-            width: 460px;
+            width: 100%;
+            max-width: 460px;
             background: var(--bg2);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
@@ -64,47 +61,15 @@
             box-shadow: 0 40px 80px rgba(0,0,0,0.5);
             animation: fadeUp 0.5s ease;
         }
-
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(16px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-
-        .brand {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px;
-            letter-spacing: 5px;
-            color: var(--cyan);
-            margin-bottom: 32px;
-        }
-
-        .form-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 34px;
-            letter-spacing: 3px;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .form-sub {
-            font-size: 13px;
-            color: var(--muted);
-            font-weight: 300;
-            margin-bottom: 32px;
-        }
-
+        .brand { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 5px; color: var(--cyan); margin-bottom: 32px; }
+        .form-title { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 3px; color: var(--text); margin-bottom: 4px; }
+        .form-sub { font-size: 13px; color: var(--muted); font-weight: 300; margin-bottom: 32px; }
         .input-group { margin-bottom: 20px; }
-
-        .input-label {
-            font-size: 10px;
-            letter-spacing: 2.5px;
-            color: var(--muted);
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-        }
-
+        .input-label { font-size: 10px; letter-spacing: 2.5px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; display: block; }
         .input-group input {
             width: 100%;
             padding: 13px 16px;
@@ -117,34 +82,10 @@
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-
-        .input-group input:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 0 3px var(--cyan-dim);
-        }
-
-        .alert {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-        .alert.error {
-            background: rgba(255,107,107,0.08);
-            border: 1px solid rgba(255,107,107,0.25);
-            color: var(--red);
-        }
-
-        .alert.success {
-            background: rgba(74,222,128,0.08);
-            border: 1px solid rgba(74,222,128,0.25);
-            color: var(--green);
-        }
-
+        .input-group input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-dim); }
+        .alert { display: flex; align-items: center; gap: 10px; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; }
+        .alert.error { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); color: var(--red); }
+        .alert.success { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.25); color: var(--green); }
         .submit-btn {
             width: 100%;
             padding: 14px;
@@ -159,68 +100,48 @@
             transition: all 0.2s;
             margin-top: 8px;
         }
-
-        .submit-btn:hover {
-            background: #6dd4e8;
-            box-shadow: 0 8px 24px var(--cyan-glow);
-            transform: translateY(-1px);
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 24px;
-            font-size: 12px;
-            color: var(--muted);
-            text-decoration: none;
-            letter-spacing: 1px;
-            transition: color 0.2s;
-        }
-
+        .submit-btn:hover { background: #6dd4e8; box-shadow: 0 8px 24px var(--cyan-glow); transform: translateY(-1px); }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 24px; font-size: 12px; color: var(--muted); text-decoration: none; letter-spacing: 1px; transition: color 0.2s; }
         .back-link:hover { color: var(--cyan); }
+
+        /* 📱 MOBILE */
+        @media (max-width: 768px) {
+            .container { padding: 32px 24px; border-radius: 20px; }
+            .brand { font-size: 20px; margin-bottom: 20px; }
+            .form-title { font-size: 26px; }
+            .form-sub { margin-bottom: 20px; }
+            .input-group input { font-size: 16px; padding: 14px 16px; }
+            .submit-btn { font-size: 18px; padding: 15px; }
+        }
     </style>
 </head>
 <body>
-
 <div class="container">
-
     <div class="brand">TASKR</div>
-
     <div class="form-title">RESET PASSWORD</div>
     <div class="form-sub">Verify your username first</div>
-
     {% if error %}
     <div class="alert error">⚠ {{ error }}</div>
     {% endif %}
-
     {% if success %}
     <div class="alert success">✓ {{ success }}</div>
     {% endif %}
-
     <form method="POST">
-
         <div class="input-group">
             <label class="input-label">Username</label>
             <input type="text" name="username" required value="{{ username if username }}">
         </div>
-
         {% if username %}
         <div class="input-group">
             <label class="input-label">New Password</label>
             <input type="password" name="new_password" required>
         </div>
         {% endif %}
-
         <button type="submit" class="submit-btn">
             {% if username %}UPDATE PASSWORD{% else %}VERIFY USERNAME{% endif %}
         </button>
-
     </form>
-
     <a href="/" class="back-link">← Back to Login</a>
-
 </div>
-
 </body>
 </html>
